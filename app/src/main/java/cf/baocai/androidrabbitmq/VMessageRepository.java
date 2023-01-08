@@ -32,6 +32,16 @@ public class VMessageRepository {
 
     }
 
+    public void clear() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                vMessageDao.delete();
+            }
+        });
+
+    }
+
     public LiveData<List<VoiceMessage>> getListLiveData() {
         return listLiveData;
     }

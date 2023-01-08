@@ -25,4 +25,8 @@ public class MessageViewModel extends AndroidViewModel {
     public void insert(VoiceMessage voiceMessage) {
         vMessageRepository.insert(voiceMessage);
     }
+
+    public void clear() {
+        vMessageRepository.clear();
+    }
 }

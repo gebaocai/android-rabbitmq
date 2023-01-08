@@ -58,4 +58,6 @@ dependencies {
     implementation "androidx.room:room-paging:$room_version"
 
     implementation 'cn.hutool:hutool-all:5.7.16'
+    implementation 'com.rabbitmq:amqp-client:5.16.0'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 }

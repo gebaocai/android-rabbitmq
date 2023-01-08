@@ -17,8 +17,8 @@ public interface VMessageDao {
     @Update
     public void updateUsers(VoiceMessage... voiceMessages);
 
-    @Delete
-    void delete(VoiceMessage voiceMessage);
+    @Query("DELETE FROM voiceMessages")
+    void delete();
 
 //    @Query("Select * from voiceMessages")
 //    List<VoiceMessage> getAll();

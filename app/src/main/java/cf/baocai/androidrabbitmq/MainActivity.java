@@ -1,5 +1,6 @@
 package cf.baocai.androidrabbitmq;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import java.util.Random;
@@ -49,11 +52,28 @@ public class MainActivity extends AppCompatActivity {
         sendBtn.setOnClickListener(v -> {
             VoiceMessage voiceMessage = new VoiceMessage();
             voiceMessage.messageId = UUID.randomUUID().toString();
-            voiceMessage.senderName = RandomUtil.randomString("user", 8);
+            voiceMessage.senderName = RandomUtil.randomString(3);
             voiceMessage.distance = new Random().nextFloat();
             voiceMessage.duration = RandomUtil.randomInt(60);
             model.insert(voiceMessage);
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_clear://清空数据
+                model.clear();
+            default:
+                break;
+        }
+        return true;
     }
 }
