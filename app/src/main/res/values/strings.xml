@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Android RabbitMQ</string>
+    <string name="button_label_toast">Toast</string>
+    <string name="button_label_count">Count</string>
+    <string name="count_initial_value">0</string>
+    <string name="toast_message">Hello Toast!</string>
+    <string name="room_name">附近的人</string>
+    <string name="tv_duration_text">0s</string>
+    <string name="tv_user_name_text">大魔王:</string>
+    <string name="tv_distance_text">距离我100m</string>
+    <string name="btn_send_text">长按发送语音消息</string>
 </resources>
