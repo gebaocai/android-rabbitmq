@@ -1,20 +1,19 @@
 package cf.baocai.androidrabbitmq;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
-import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import cf.baocai.androidrabbitmq.db.VoiceMessage;
+import cn.hutool.core.util.RandomUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
         sendBtn.setOnClickListener(v -> {
             VoiceMessage voiceMessage = new VoiceMessage();
             voiceMessage.messageId = UUID.randomUUID().toString();
-            voiceMessage.senderName = "我是你大爷";
-            voiceMessage.distance = 2.5f;
-            voiceMessage.duration = 10;
+            voiceMessage.senderName = RandomUtil.randomString("user", 8);
+            voiceMessage.distance = new Random().nextFloat();
+            voiceMessage.duration = RandomUtil.randomInt(60);
             model.insert(voiceMessage);
         });
 
