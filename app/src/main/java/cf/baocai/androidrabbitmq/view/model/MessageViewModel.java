@@ -1,4 +1,4 @@
-package cf.baocai.androidrabbitmq.viewmodel;
+package cf.baocai.androidrabbitmq.view.model;
 
 import android.app.Application;
 

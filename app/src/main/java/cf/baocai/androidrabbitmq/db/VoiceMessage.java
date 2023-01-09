@@ -12,6 +12,6 @@ public class VoiceMessage {
     public String senderName;
 
     public float distance;
-    public Integer duration;
+    public float duration;
     public String filePath;
 }

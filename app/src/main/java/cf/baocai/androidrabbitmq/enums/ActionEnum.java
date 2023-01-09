@@ -1,4 +1,4 @@
-package cf.baocai.androidrabbitmq;
+package cf.baocai.androidrabbitmq.enums;
 
 public enum ActionEnum {
     SEND("send"), CONSUME("consume"), START_SERVER("start_server"), EMPTY("empty");

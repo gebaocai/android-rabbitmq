@@ -28,7 +28,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintBottom_toTopOf="@+id/btn_send"/>
 
-    <Button
+    <cf.baocai.androidrabbitmq.view.AudioRecorderButton
         android:id="@+id/btn_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,5 +1,7 @@
 package cf.baocai.androidrabbitmq.adapter;
 
+import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import java.util.List;
 
 import cf.baocai.androidrabbitmq.R;
 import cf.baocai.androidrabbitmq.db.VoiceMessage;
+import cf.baocai.androidrabbitmq.util.MediaManager;
 
 public class VMAdapter extends RecyclerView.Adapter<VMAdapter.ViewHolder> {
     private List<VoiceMessage> voiceMessageList = new ArrayList<>();
@@ -37,7 +40,7 @@ public class VMAdapter extends RecyclerView.Adapter<VMAdapter.ViewHolder> {
 
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.message_row_item, parent, false);
+                .inflate(R.layout.item_recorder, parent, false);
 
         return new ViewHolder(view);
     }
@@ -45,12 +48,37 @@ public class VMAdapter extends RecyclerView.Adapter<VMAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         VoiceMessage voiceMessage = voiceMessageList.get(position);
-        holder.tv_distance.setText("距离我 "+voiceMessage.distance+" 米");
-        holder.tv_duration.setText(voiceMessage.duration+"s");
-        holder.tv_user_name.setText(voiceMessage.senderName+":");
+        holder.seconds.setText(Math.round(voiceMessage.duration)+"\"");
 
-        ViewGroup.LayoutParams tv_duration = holder.tv_duration.getLayoutParams();
-        tv_duration.width = (int)(mMinItemWidth+(mMaxItemWidth/60f*voiceMessage.duration));
+        ViewGroup.LayoutParams lp = holder.length.getLayoutParams();
+        lp.width = (int)(mMinItemWidth+(mMaxItemWidth/60f*voiceMessage.duration));
+
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            private View mAnimView;
+            @Override
+            public void onClick(View v) {
+                if(mAnimView!=null)
+                {
+                    mAnimView.setBackgroundResource(R.drawable.adj);
+                    mAnimView=null;
+                }
+                //play video
+                mAnimView=holder.itemView.findViewById(R.id.id_recorder_anim);
+                mAnimView.setBackgroundResource(R.drawable.play_anim);
+                AnimationDrawable anim=(AnimationDrawable)holder.mAnimView.getBackground();
+                anim.start();
+                //play audio
+                MediaManager.playSound(voiceMessage.filePath,new MediaPlayer.OnCompletionListener() {
+
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        holder.mAnimView.setBackgroundResource(R.drawable.adj);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -63,13 +91,15 @@ public class VMAdapter extends RecyclerView.Adapter<VMAdapter.ViewHolder> {
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_duration, tv_user_name, tv_distance;
+        private TextView seconds;
+        private View length;
+        private View mAnimView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tv_duration = itemView.findViewById(R.id.tv_duration);
-            tv_user_name = itemView.findViewById(R.id.tv_user_name);
-            tv_distance = itemView.findViewById(R.id.tv_distance);
+            seconds = itemView.findViewById(R.id.id_recorder_time);
+            length = itemView.findViewById(R.id.id_recorder_length);
+            mAnimView = itemView.findViewById(R.id.id_recorder_anim);
         }
     }
 }

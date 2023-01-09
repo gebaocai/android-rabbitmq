@@ -1,21 +1,31 @@
 package cf.baocai.androidrabbitmq;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
 import cf.baocai.androidrabbitmq.adapter.VMAdapter;
+import cf.baocai.androidrabbitmq.enums.ActionEnum;
 import cf.baocai.androidrabbitmq.service.RabbitMQService;
-import cf.baocai.androidrabbitmq.viewmodel.MessageViewModel;
+import cf.baocai.androidrabbitmq.view.AudioRecorderButton;
+import cf.baocai.androidrabbitmq.view.model.MessageViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
+        checkPermission();
+
         RecyclerView recyclerView = findViewById(R.id.message_list);
 
         linearLayoutManager = new LinearLayoutManager(this);
@@ -39,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 启动RabbitMQ服务
         Intent intent = new Intent(this, RabbitMQService.class);
-        intent.putExtra("action", ActionEnum.CONSUME.getAction());
+//        intent.putExtra("action", ActionEnum.CONSUME.getAction());
         startService(intent);
 
         model = new ViewModelProvider(this).get(MessageViewModel.class);
@@ -52,18 +64,17 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.scrollToPosition(voiceMessages.size()-1);
         });
 
-        Button sendBtn = findViewById(R.id.btn_send);
-        sendBtn.setOnClickListener(v -> {
-//            VoiceMessage voiceMessage = new VoiceMessage();
-//            voiceMessage.messageId = UUID.randomUUID().toString();
-//            voiceMessage.senderName = RandomUtil.randomString(3);
-//            voiceMessage.distance = new Random().nextFloat();
-//            voiceMessage.duration = RandomUtil.randomInt(60);
-//            model.insert(voiceMessage);
-            Intent sendIntent = new Intent(this, RabbitMQService.class);
-            sendIntent.putExtra("action", ActionEnum.SEND.getAction());
-
-            startService(sendIntent);
+        AudioRecorderButton sendBtn = findViewById(R.id.btn_send);
+        sendBtn.setAudioFinishRecorderListener(new AudioRecorderButton.AudioFinishRecorderListener() {
+            @Override
+            public void onFinish(float seconds, String filePath) {
+                Log.d(TAG, "时长："+seconds);
+                Intent sendIntent = new Intent(getApplicationContext(), RabbitMQService.class);
+                sendIntent.putExtra("action", ActionEnum.SEND.getAction());
+                sendIntent.putExtra("duration", seconds);
+                sendIntent.putExtra("filePath", filePath);
+                startService(sendIntent);
+            }
         });
 
     }
@@ -83,5 +94,33 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    /**
+     * 权限申请
+     */
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] permissions = new String[]{
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            };
+            for (String permission : permissions) {
+                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, permissions, 200);
+                    return;
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 200) {
+            checkPermission();
+        }
     }
 }
