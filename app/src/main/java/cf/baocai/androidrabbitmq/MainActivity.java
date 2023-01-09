@@ -6,17 +6,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
-import java.util.Random;
-import java.util.UUID;
-
-import cf.baocai.androidrabbitmq.db.VoiceMessage;
-import cn.hutool.core.util.RandomUtil;
+import cf.baocai.androidrabbitmq.adapter.VMAdapter;
+import cf.baocai.androidrabbitmq.service.RabbitMQService;
+import cf.baocai.androidrabbitmq.viewmodel.MessageViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
         VMAdapter adapter = new VMAdapter();
         recyclerView.setAdapter(adapter);
 
+        // 启动RabbitMQ服务
+        Intent intent = new Intent(this, RabbitMQService.class);
+        intent.putExtra("action", ActionEnum.CONSUME.getAction());
+        startService(intent);
+
         model = new ViewModelProvider(this).get(MessageViewModel.class);
         model.getListLiveData().observe(this, voiceMessages -> {
             Log.d(TAG, "消息变化了, 当前数量:"+voiceMessages.size());
@@ -50,12 +54,16 @@ public class MainActivity extends AppCompatActivity {
 
         Button sendBtn = findViewById(R.id.btn_send);
         sendBtn.setOnClickListener(v -> {
-            VoiceMessage voiceMessage = new VoiceMessage();
-            voiceMessage.messageId = UUID.randomUUID().toString();
-            voiceMessage.senderName = RandomUtil.randomString(3);
-            voiceMessage.distance = new Random().nextFloat();
-            voiceMessage.duration = RandomUtil.randomInt(60);
-            model.insert(voiceMessage);
+//            VoiceMessage voiceMessage = new VoiceMessage();
+//            voiceMessage.messageId = UUID.randomUUID().toString();
+//            voiceMessage.senderName = RandomUtil.randomString(3);
+//            voiceMessage.distance = new Random().nextFloat();
+//            voiceMessage.duration = RandomUtil.randomInt(60);
+//            model.insert(voiceMessage);
+            Intent sendIntent = new Intent(this, RabbitMQService.class);
+            sendIntent.putExtra("action", ActionEnum.SEND.getAction());
+
+            startService(sendIntent);
         });
 
     }

@@ -1,4 +1,4 @@
-package cf.baocai.androidrabbitmq;
+package cf.baocai.androidrabbitmq.db;
 
 import android.content.Context;
 import android.os.AsyncTask;

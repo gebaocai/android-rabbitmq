@@ -1,4 +1,4 @@
-package cf.baocai.androidrabbitmq;
+package cf.baocai.androidrabbitmq.adapter;
 
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import cf.baocai.androidrabbitmq.R;
 import cf.baocai.androidrabbitmq.db.VoiceMessage;
 
 public class VMAdapter extends RecyclerView.Adapter<VMAdapter.ViewHolder> {

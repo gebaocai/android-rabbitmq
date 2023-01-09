@@ -1,4 +1,4 @@
-package cf.baocai.androidrabbitmq;
+package cf.baocai.androidrabbitmq.viewmodel;
 
 import android.app.Application;
 
@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import cf.baocai.androidrabbitmq.db.VMessageRepository;
 import cf.baocai.androidrabbitmq.db.VoiceMessage;
 
 public class MessageViewModel extends AndroidViewModel {
