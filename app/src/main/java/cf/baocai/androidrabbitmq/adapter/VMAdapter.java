@@ -1,5 +1,6 @@
 package cf.baocai.androidrabbitmq.adapter;
 
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.util.DisplayMetrics;
@@ -11,6 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.ybq.android.spinkit.SpinKitView;
+import com.github.ybq.android.spinkit.SpriteFactory;
+import com.github.ybq.android.spinkit.Style;
+import com.github.ybq.android.spinkit.sprite.Sprite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,18 +73,33 @@ public class VMAdapter extends RecyclerView.Adapter<VMAdapter.ViewHolder> {
                 //play video
                 mAnimView=holder.itemView.findViewById(R.id.id_recorder_anim);
                 mAnimView.setBackgroundResource(R.drawable.play_anim);
-                AnimationDrawable anim=(AnimationDrawable)holder.mAnimView.getBackground();
+                AnimationDrawable anim=(AnimationDrawable)mAnimView.getBackground();
                 anim.start();
                 //play audio
                 MediaManager.playSound(voiceMessage.filePath,new MediaPlayer.OnCompletionListener() {
 
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        holder.mAnimView.setBackgroundResource(R.drawable.adj);
+                        mAnimView.setBackgroundResource(R.drawable.adj);
                     }
                 });
             }
         });
+
+
+        SpinKitView spinKitView = (SpinKitView) holder.itemView.findViewById(R.id.spin_kit);
+        if (voiceMessage.received) {
+            spinKitView.setVisibility(View.GONE);
+        } else {
+            spinKitView.setVisibility(View.VISIBLE);
+        }
+//        Style style = Style.CIRCLE;
+//
+//        Sprite drawable =SpriteFactory.create(style);
+//        spinKitView.setIndeterminateDrawable(drawable);
+//        spinKitView.setColor(Color.GRAY);
+
+
     }
 
     @Override
@@ -93,13 +114,11 @@ public class VMAdapter extends RecyclerView.Adapter<VMAdapter.ViewHolder> {
     static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView seconds;
         private View length;
-        private View mAnimView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             seconds = itemView.findViewById(R.id.id_recorder_time);
             length = itemView.findViewById(R.id.id_recorder_length);
-            mAnimView = itemView.findViewById(R.id.id_recorder_anim);
         }
     }
 }

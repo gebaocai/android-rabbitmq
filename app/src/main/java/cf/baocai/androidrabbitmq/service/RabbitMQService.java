@@ -34,6 +34,7 @@ import cf.baocai.androidrabbitmq.db.VoiceMessage;
 import cf.baocai.androidrabbitmq.enums.ActionEnum;
 import cf.baocai.androidrabbitmq.packet.VoiceMsgPacket;
 import cf.baocai.androidrabbitmq.util.FileUtil;
+import cn.hutool.core.bean.BeanUtil;
 
 public class RabbitMQService extends Service {
     private final static String TAG = RabbitMQService.class.getSimpleName();
@@ -162,10 +163,12 @@ public class RabbitMQService extends Service {
                     String filePath = file.getAbsolutePath();
 
                     VoiceMessage voiceMessage = new VoiceMessage();
+                    BeanUtil.copyProperties(voiceMsgPacket, voiceMessage);
                     voiceMessage.filePath = filePath;
-                    voiceMessage.duration = voiceMsgPacket.duration;
+                    voiceMessage.received = true;
 
                     VMessageRepository vMessageRepository = new VMessageRepository(getApplicationContext());
+
                     vMessageRepository.insert(voiceMessage);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -196,25 +199,12 @@ public class RabbitMQService extends Service {
             //创建连接
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            String message = "info: Hello World!";
 
-            float duration = bundle.getFloat("duration");
-            String filePath = bundle.getString("filePath");
-
+            VoiceMessage voiceMessage = (VoiceMessage) bundle.getSerializable("msg");
             VoiceMsgPacket voiceMsgPacket = new VoiceMsgPacket();
-            voiceMsgPacket.messageId = UUID.randomUUID().toString();
-            voiceMsgPacket.duration = duration;
-            //这里是Voice的数据
-//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//                byte[] body = Files.readAllBytes(Paths.get(filePath));
-//                voiceMsgPacket.voice = body;
-//            } else {
-//
-//            }
+            BeanUtil.copyProperties(voiceMessage, voiceMsgPacket);
 
-//            FileUtils
-
-            byte[] body = cn.hutool.core.io.FileUtil.readBytes(filePath);
+            byte[] body = cn.hutool.core.io.FileUtil.readBytes(voiceMessage.filePath);
             voiceMsgPacket.voice = body;
             byte[] data = SerializationUtils.serialize(voiceMsgPacket);
 

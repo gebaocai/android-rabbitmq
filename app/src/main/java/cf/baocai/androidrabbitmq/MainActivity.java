@@ -21,11 +21,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import java.util.UUID;
+
 import cf.baocai.androidrabbitmq.adapter.VMAdapter;
+import cf.baocai.androidrabbitmq.db.VoiceMessage;
 import cf.baocai.androidrabbitmq.enums.ActionEnum;
+import cf.baocai.androidrabbitmq.packet.VoiceMsgPacket;
 import cf.baocai.androidrabbitmq.service.RabbitMQService;
 import cf.baocai.androidrabbitmq.view.AudioRecorderButton;
 import cf.baocai.androidrabbitmq.view.model.MessageViewModel;
+import cn.hutool.core.bean.BeanUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,10 +74,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish(float seconds, String filePath) {
                 Log.d(TAG, "时长："+seconds);
+
+                VoiceMessage voiceMessage = new VoiceMessage();
+                voiceMessage.received = false;
+                voiceMessage.filePath = filePath;
+                voiceMessage.duration = seconds;
+                voiceMessage.messageId = UUID.randomUUID().toString();
+                model.insert(voiceMessage);
+
                 Intent sendIntent = new Intent(getApplicationContext(), RabbitMQService.class);
                 sendIntent.putExtra("action", ActionEnum.SEND.getAction());
-                sendIntent.putExtra("duration", seconds);
-                sendIntent.putExtra("filePath", filePath);
+                sendIntent.putExtra("msg", voiceMessage);
                 startService(sendIntent);
             }
         });
